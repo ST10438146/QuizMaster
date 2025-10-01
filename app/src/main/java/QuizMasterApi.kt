@@ -33,6 +33,8 @@ interface QuizMasterApi {
     suspend fun updateUserStats(
         @Body statsUpdate: StatsUpdate
     ): Response<User>
+
+    fun syncAttempts(unsyncedAttempts: List<AttemptEntity>)
 }
 
 // API Request/Response models

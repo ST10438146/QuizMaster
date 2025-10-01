@@ -32,6 +32,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
     }
     buildFeatures {
         compose = true
@@ -99,4 +100,15 @@ dependencies {
     implementation(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    //AppCompat, Core KTX
+    implementation(libs.androidx.core.ktx.v190)
+    //current version
+    implementation(libs.androidx.appcompat.v161)
+
+    // BottomNavigationView
+    implementation(libs.material.v1100)
+    // ConstraintLayout for flexible UI design
+    implementation(libs.androidx.constraintlayout.v214)
+
+    implementation(libs.androidx.cardview)
 }
