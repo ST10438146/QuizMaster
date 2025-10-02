@@ -17,7 +17,7 @@ class SettingsDataStore @Inject constructor(
 ) {
     companion object {
         val BIOMETRICS = booleanPreferencesKey("biometrics_enabled")
-        // Add other settings keys here (e.g., KEY_NOTIFICATIONS)
+        val NOTIFICATIONS = booleanPreferencesKey("notifications_enabled") // Example addition
     }
 
     // Flow to observe the current state of biometrics setting
@@ -27,6 +27,8 @@ class SettingsDataStore @Inject constructor(
     // Suspending function to update the local setting
     suspend fun setBiometrics(enabled: Boolean) {
         context.dataStore.edit { prefs -> prefs[BIOMETRICS] = enabled }
-        // TODO: also update Firestore `/users/{uid}/settings` in the background [cite: 136]
+        // TODO: implement logic to also update Firebase/REST API in the background (SyncWorker/dedicated call)
     }
+
+    // Add similar function for setNotifications
 }

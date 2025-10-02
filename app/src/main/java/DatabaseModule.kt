@@ -1,4 +1,5 @@
 import android.content.Context
+import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,22 +16,12 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): QuizMasterDatabase {
-        return QuizMasterDatabase.getDatabase(context)
+    fun provideDatabase(@ApplicationContext appContext: Context): QuizMasterDatabase {
+        return Room.databaseBuilder(appContext, QuizMasterDatabase::class.java, "quizmaster_db")
+            .addMigrations(MIGRATION_INT_TO_LONG)
+            .build()
     }
 
     @Provides
-    fun provideQuestionDao(database: QuizMasterDatabase): QuestionDao {
-        return database.questionDao()
-    }
-
-    @Provides
-    fun provideAttemptDao(database: QuizMasterDatabase): AttemptDao {
-        return database.attemptDao()
-    }
-
-    @Provides
-    fun providePendingEventDao(database: QuizMasterDatabase): PendingEventDao {
-        return database.pendingEventDao()
-    }
+    fun provideAttemptDao(db: QuizMasterDatabase): AttemptDao = db.attemptDao()
 }

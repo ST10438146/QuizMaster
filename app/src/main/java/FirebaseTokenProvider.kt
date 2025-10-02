@@ -1,4 +1,5 @@
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -19,4 +20,6 @@ class FirebaseTokenProvider @Inject constructor(
             null
         }
     }
+    // Convenience blocking helper for use on background threads (e.g., Interceptor)
+    fun getIdTokenBlocking(): String? = runBlocking { getIdToken() }
 }

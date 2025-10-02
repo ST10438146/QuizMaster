@@ -1,0 +1,1 @@
+data class ProfileDto(val uid: String, val displayName: String?, val avatarUrl: String?, val score: Int = 0)

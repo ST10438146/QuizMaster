@@ -33,7 +33,7 @@ interface AttemptDao {
     suspend fun getUnsyncedAttempts(): List<AttemptEntity>
 
     @Query("UPDATE attempts SET synced = 1 WHERE id = :id")
-    suspend fun markAsSynced(id: Int)
+    suspend fun markAsSynced(id: List<Long>)
 
     @Query("SELECT COUNT(*) FROM attempts WHERE isCorrect = 1")
     fun getCorrectAnswersCount(): Flow<Int>

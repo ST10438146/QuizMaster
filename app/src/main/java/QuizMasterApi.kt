@@ -34,7 +34,9 @@ interface QuizMasterApi {
         @Body statsUpdate: StatsUpdate
     ): Response<User>
 
-    fun syncAttempts(unsyncedAttempts: List<AttemptEntity>)
+    @POST("sync/attempts")
+    suspend fun syncAttempts(@Body attempts: List<AttemptDto>): Response<Unit>
+
 }
 
 // API Request/Response models

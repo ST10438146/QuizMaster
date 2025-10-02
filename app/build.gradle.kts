@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+
 
 }
 
@@ -12,8 +14,8 @@ android {
 
     defaultConfig {
         applicationId = "vcmsa.projects.quizmaster"
-        minSdk = 36
-        targetSdk = 36
+        minSdk = 28
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -58,26 +60,38 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.hilt.common)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // Room Database
-    implementation(libs.androidx.room.runtime)
+    // Kotlin Stdlib
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
 
-    // Jetpack Compose
-    implementation(libs.androidx.compose.bom)
-    implementation(libs.androidx.ui)
+    // Compose BOM
+    implementation(platform("androidx.compose:compose-bom:2024.10.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
 
+    // Room Database
+    implementation(libs.androidx.room.runtime)
+
     // Retrofit & OkHttp
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation(libs.retrofit.v2110)
+    implementation(libs.converter.gson.v2110)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
-    implementation (libs.retrofit.v2110)
-    implementation (libs.converter.gson.v2110)
+
+    // Retrofit + Moshi (latest stable v2.x)
+    implementation(libs.converter.moshi)
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.moshi.kotlin.codegen)
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
@@ -100,15 +114,20 @@ dependencies {
     implementation(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    //AppCompat, Core KTX
+    // AppCompat, Core KTX, UI
     implementation(libs.androidx.core.ktx.v190)
-    //current version
     implementation(libs.androidx.appcompat.v161)
-
-    // BottomNavigationView
     implementation(libs.material.v1100)
-    // ConstraintLayout for flexible UI design
     implementation(libs.androidx.constraintlayout.v214)
-
     implementation(libs.androidx.cardview)
+
+    // Force Kotlin version across all transitive dependencies
+    configurations.all {
+        resolutionStrategy {
+            force("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
+            force("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.24")
+        }
+    }
+
+
 }

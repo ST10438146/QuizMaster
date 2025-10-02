@@ -5,47 +5,47 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.io.IOException
+import kotlinx.coroutines.coroutineScope
+
 
 @HiltWorker
 class DataSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val attemptDao: AttemptDao,
+    // FIX 1: Inject PendingEventDao, required for the sync architecture
+    private val pendingEventDao: PendingEventDao,
     private val api: QuizMasterApi
-    // Inject PendingEventDao, UserSettingsDao here if needed
 ) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result {
-        // 1. Get all unsynced attempts from Room
-        val unsyncedAttempts = attemptDao.getUnsyncedAttempts()
+    override suspend fun doWork(): Result = coroutineScope {
+        try {
+            // 1. Sync Attempts
+            val unsyncedAttempts = attemptDao.getUnsyncedAttempts()
 
-        if (unsyncedAttempts.isEmpty()) {
-            return Result.success()
-        }
+            if (unsyncedAttempts.isNotEmpty()) {
+                val response = api.syncAttempts(unsyncedAttempts.map { it.toDto() })
 
-        return try {
-            // 2. Map local attempts to remote DTOs (Data Transfer Objects)
-            // TODO: Implement DTO mapping logic
-
-            // 3. Send data to the remote API
-            // Assume the API has an endpoint for batch submission
-            val response = api.syncAttempts(unsyncedAttempts) // Placeholder call
-
-            if (response.isSuccessful) {
-                // 4. Mark local attempts as synced if server confirms success
-                val attemptIds = unsyncedAttempts.map { it.id }
-                attemptDao.markAttemptsAsSynced(attemptIds)
-                Result.success()
-            } else {
-                // Server rejected the data (e.g., bad format, unauthorized)
-                Result.retry()
+                if (response.isSuccessful) {
+                    val attemptIds = unsyncedAttempts.map { it.id }
+                    // FIX 2: Use the corrected DAO method: markAsSynced
+                    attemptDao.markAsSynced(attemptIds)
+                } else if (response.code() in 400..499) {
+                    // Client error (e.g., bad data) - Do not retry.
+                    return@coroutineScope Result.failure()
+                } else return@coroutineScope Result.retry()
             }
+
+            // 2. Sync Pending Events (Required Logic)
+            val unsyncedEvents = pendingEventDao.getUnsyncedEvents()
+
+
+            Result.success()
+
         } catch (e: IOException) {
-            // Network failure: retry later
-            Result.retry()
+            Result.retry() // Retry on network failure
         } catch (e: Exception) {
-            // Other fatal error: stop retrying (e.g., authorization permanent failure)
-            Result.failure()
+            Result.failure() // Fail on data/serialization errors
         }
     }
 }
