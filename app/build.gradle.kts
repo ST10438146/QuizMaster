@@ -2,10 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
-    id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.compose")
-
-
+    id("com.google.dagger.hilt.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -14,12 +13,17 @@ android {
 
     defaultConfig {
         applicationId = "vcmsa.projects.quizmaster"
-        minSdk = 28
-        targetSdk = 35
+        minSdk = 26
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    packaging {
+        resources {
+            excludes += "META-INF/gradle/incremental.annotation.processors"
+        }
     }
 
     buildTypes {
@@ -67,7 +71,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Kotlin Stdlib
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
 
     // Compose BOM
     implementation(platform("androidx.compose:compose-bom:2024.10.01"))
@@ -79,7 +83,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Room Database
-    implementation(libs.androidx.room.runtime)
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     // Retrofit & OkHttp
     implementation(libs.retrofit.v2110)
@@ -106,13 +112,12 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Lifecycle
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
 
-    // Hilt (Dependency Injection)
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.52")
+    kapt("com.google.dagger:hilt-android-compiler:2.52")
 
     // AppCompat, Core KTX, UI
     implementation(libs.androidx.core.ktx.v190)
@@ -124,10 +129,8 @@ dependencies {
     // Force Kotlin version across all transitive dependencies
     configurations.all {
         resolutionStrategy {
-            force("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
-            force("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.24")
+            force("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
+            force("org.jetbrains.kotlin:kotlin-stdlib-common:2.0.21")
         }
     }
-
-
 }

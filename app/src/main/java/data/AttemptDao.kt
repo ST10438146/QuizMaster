@@ -1,16 +1,13 @@
-import kotlinx.coroutines.flow.Flow
+package data
+
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
-/**
- * Data Access Object for Attempt operations
- * Tracks user's quiz attempts for analytics and offline sync
- */
 @Dao
 interface AttemptDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAttempt(attempt: AttemptEntity): Long
 
@@ -22,4 +19,7 @@ interface AttemptDao {
 
     @Query("SELECT * FROM attempts ORDER BY timestamp DESC LIMIT :limit")
     fun getRecentAttempts(limit: Int = 50): Flow<List<AttemptEntity>>
+
+    @Query("SELECT COUNT(*) FROM attempts WHERE isCorrect = 1")
+    fun getCorrectAnswersCount(): Flow<Int>
 }

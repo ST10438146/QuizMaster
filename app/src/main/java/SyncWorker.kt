@@ -5,6 +5,8 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope
+import network.QuizMasterApi
+import network.dto.toDto
 import java.io.IOException
 
 /**
@@ -29,7 +31,7 @@ class SyncWorker @AssistedInject constructor(
 
 
             if (attempts.isNotEmpty()) {
-                val dtos = attempts.map { it.toDto() } // uses AttemptEntity.toDto()
+                val dtos = attempts.map { it.toDto() } // uses AttemptEntity.network.dto.toDto()
                 val response = api.syncAttempts(dtos)
                 if (response.isSuccessful) {
                     val attemptIds = attempts.map { it.id }
@@ -42,7 +44,6 @@ class SyncWorker @AssistedInject constructor(
 
             // 2. Sync pending events
             TODO("Sync pending events")
-            val events = pendingEventDao.getUnsyncedEvents()
             Result.success()
         } catch (e: IOException) {
             Result.retry()

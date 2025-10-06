@@ -1,5 +1,7 @@
 pluginManagement {
     repositories {
+        // plugin portal needed for Kotlin plugins
+        gradlePluginPortal()
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -8,13 +10,16 @@ pluginManagement {
             }
         }
         mavenCentral()
-        gradlePluginPortal()
     }
-    plugins {
-        id("org.jetbrains.kotlin.android") version "2.2.20" // or 2.0.x+
-        id("org.jetbrains.kotlin.plugin.compose") version "2.2.20" // 👈 NEW
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith("org.jetbrains.kotlin")) {
+                useVersion("2.0.21") // choose the Kotlin version you want to use project-wide
+            }
+        }
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -25,4 +30,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "QuizMaster"
 include(":app")
- 

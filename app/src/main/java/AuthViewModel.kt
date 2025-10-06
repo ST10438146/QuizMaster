@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import data.UserEntity
+import data.UserSettingsEntity
+import student.projects.quizmaster.data.SettingsDao
+import student.projects.quizmaster.data.UserDao
 import javax.inject.Inject
 
 /**
@@ -113,11 +117,11 @@ class AuthViewModel @Inject constructor(
                     displayName = user.displayName,
                     email = user.email,
 
-                )
+                    )
                 userDao.insertUser(userEntity)
 
                 val settingsEntity = UserSettingsEntity(uid = user.uid)
-                settingsDao.insertSettings(settingsEntity)
+
             }
         } catch (e: Exception) {
             e.printStackTrace()

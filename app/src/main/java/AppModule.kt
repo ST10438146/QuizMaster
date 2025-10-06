@@ -9,6 +9,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import network.AuthInterceptor
+import network.FirebaseTokenProvider
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -23,13 +25,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    //Provides the FirebaseTokenProvider, which is used by the AuthInterceptor
+    //Provides the network.FirebaseTokenProvider, which is used by the network.AuthInterceptor
     @Provides @Singleton
-    fun provideTokenProvider(): FirebaseTokenProvider = FirebaseTokenProvider(
-        firebaseAuth = TODO()
-    )
+    fun provideTokenProvider(firebaseAuth: FirebaseAuth): FirebaseTokenProvider =
+        FirebaseTokenProvider(firebaseAuth)
 
-    //Explicitly provides the AuthInterceptor, injecting the required provider
+
+    //Explicitly provides the network.AuthInterceptor, injecting the required provider
     @Provides @Singleton
     fun provideAuthInterceptor(tokenProvider: FirebaseTokenProvider): AuthInterceptor {
         return AuthInterceptor(tokenProvider)
@@ -45,20 +47,6 @@ object AppModule {
             .addInterceptor(loggingInterceptor)
             .build()
     }
-
-    @Provides @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
-        Retrofit.Builder()
-            .baseUrl("https://api.quizmaster.example/") // Ensure this is your actual API URL
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-    //Uses the correct service interface name (QuizMasterApi, not ApiService)
-    @Provides @Singleton
-    fun provideApiService(retrofit: Retrofit): QuizMasterApi {
-        return retrofit.create(QuizMasterApi::class.java)
-    }
     /**
      * Provide Gson for JSON parsing
      */
@@ -71,26 +59,10 @@ object AppModule {
     }
 
     /**
-     * Provide Retrofit instance
-     */
-    @Provides
-    @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-    }
-
-    /**
      * Provide Firebase Auth instance
      */
-    @Provides
-    @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
-    }
+    @Provides @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
     /**
      * Provide Firebase Firestore instance

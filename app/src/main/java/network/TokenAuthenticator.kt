@@ -1,11 +1,14 @@
+package network
+
+import network.FirebaseTokenProvider
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
 import javax.inject.Inject
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 
 /**
  * OkHttp Authenticator that tries to refresh the Firebase token once on 401.

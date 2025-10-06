@@ -1,3 +1,5 @@
+package network.dto
+
 data class LeaderboardDto(
     val period: String,
     val entries: List<LeaderboardEntryDto> = emptyList()

@@ -1,4 +1,5 @@
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+package repository
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import jakarta.inject.Inject
